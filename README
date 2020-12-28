@@ -1,0 +1,43 @@
+				starAML version 2.0
+=========================================================================
+
+starAML is a python class made for easy computation of stellar angular momentum loss.
+This program applies the method described in R\'eville et al. 2015b, the Astrophysical Journal 814, 99
+Copyright (C) 2015, Victor R\'eville, Allan Sacha Brun, Antoine Strugarek
+
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Developpers:
+===========
+
+Victor R\'eville 
+Antoine Stugarek
+Allan Sacha Brun
+
+System Requirements:
+====================
+
+Python > 3.7
+numpy > 1.19
+scipy > 1.15
+
+Install:
+========
+
+No specific instructions for install. 
+Run your script ensuring that all sources are known by $PYTHON_PATH.
+An example is provided with the script example.py
+
+For any question, write at victor.reville@irap.omp.eu
