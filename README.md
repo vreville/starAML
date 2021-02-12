@@ -8,15 +8,15 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 # Developpers:
 
-Victor Réville 
-Antoine Stugarek
-Allan Sacha Brun
+* Victor Réville 
+* Antoine Stugarek
+* Allan Sacha Brun
 
 # System Requirements:
 
-Python > 3.7
-numpy > 1.19
-scipy > 1.15
+* Python > 3.7
+* numpy > 1.19
+* scipy > 1.15
 
 # Install:
 
