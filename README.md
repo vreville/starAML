@@ -14,9 +14,9 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 # System Requirements:
 
-* Python > 3.7
-* numpy > 1.19
-* scipy > 1.15
+* Python >= 3.7
+* numpy >= 1.19
+* scipy >= 1.15
 
 # Install:
 
