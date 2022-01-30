@@ -22,7 +22,7 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 No specific instructions for install. 
 Run your script ensuring that all sources are known by $PYTHONPATH.
-An example is provided with the script example.py
+Various examples are provided.
 
 For any question, write at victor.reville@irap.omp.eu
 
