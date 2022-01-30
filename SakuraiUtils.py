@@ -137,7 +137,7 @@ class SakuraiSolution(object):
 
             XNP=XN-I*FN
 
-#            for i in xrange(0,6):
+#            for i in range(0,6):
 #                count=0
 #                while((XNP[i,0] <= 0) and (count<=10)):
 #                    XNP[i,0]=0.5*(XNP[i,0]+XN[i,0])
@@ -185,7 +185,7 @@ class SakuraiSolution(object):
         rho_profile=np.zeros(len(x))+0.01
         rA,rhoA=self.alfvenParam(vkep,cs_vesc,vrot_vesc,rstar,rhostar)
 
-        for i in xrange(0,len(x)):
+        for i in range(0,len(x)):
             if(i==0):
                 rho_profile[i]=1/rhoA
             elif (x[i]<=self.xs):
@@ -228,27 +228,32 @@ class SakuraiSolution(object):
 
 ####################################################################
 
-def cmpThetaOmegaMap(filename,Gamma,Theta0,Omega0,Thetaf,Omegaf,resTheta,resOmega):
+def cmpThetaOmegaMap(filename,Gamma,the,om):
+
     """ Compute (Theta, Omega) Map of xs,ys,xf,yf,E,Beta and the Newton-Raphson
     Error given Gamma and the boundary/resolution """
 
-    the=np.linspace(Theta0,Thetaf,resTheta)
-    om=np.linspace(Omega0,Omegaf,resOmega)
 
+    if(Gamma !=1.05):
+        print("Warning, Gamma != 1.05, the method might not converge")
+    
     #Close solution for Theta=0.5 and Omega=0.25 and Gamma=1.05
     x0=[0.85,1.85,1.3,0.6,0.6,10]
 
-    lineOm=np.linspace(Omega0,0.25,50)
-    lineThe=np.linspace(Theta0,0.5,50)
+    lineOm=np.linspace(om[0],0.25,500)
+    lineThe=np.linspace(the[0],0.5,500)
 
-    for k in xrange(1,len(lineOm)+1):
+    for k in range(1,len(lineOm)+1):
         Theta=lineThe[-k]
         Omega=lineOm[-k]
     
         Sol=SakuraiSolution(Gamma,Theta,Omega,x0[0],x0[1],x0[2],x0[3],x0[4],x0[5])
         x1,y1,x2,y2,b,e=Sol.NewtonRaphson(x0,1e-10)
-
         x0=[x1,y1,x2,y2,b,e]
+        Err=np.linalg.norm(Sol.fun(x0))
+        if Err!=Err:
+            raise ValueError("Nan detected, check your Theta0, Omega0")
+
 
     xs=np.zeros((len(the),len(om)))
     xf=np.zeros((len(the),len(om)))
@@ -260,16 +265,17 @@ def cmpThetaOmegaMap(filename,Gamma,Theta0,Omega0,Thetaf,Omegaf,resTheta,resOmeg
     Om=np.zeros((len(the),len(om)))
     Err=np.zeros((len(the),len(om)))
 
-    for i in xrange(0,len(the)):
+    for i in range(0,len(the)):
+
         if(i>0):
             x0=[xs[i-1,0],ys[i-1,0],xf[i-1,0],yf[i-1,0],Beta[i-1,0],E[i-1,0]]
-        
-        for j in xrange(0,len(om)):
+            
+        for j in range(0,len(om)):
+            print("====> Computing Theta Omega Map : progress = {:.5f}%\r".format(1.0*(len(om)*i+j)/(len(om)*len(the))),end='\r',flush=True)
 
             Theta=the[i]
             Omega=om[j]
 
-            #print("Theta = {0}, omega = {1}".format(Theta,Omega))
             Sol=SakuraiSolution(Gamma,Theta,Omega,x0[0],x0[1],x0[2],x0[3],x0[4],x0[5])        
             x1,y1,x2,y2,b,e=Sol.NewtonRaphson(x0,1e-10)
 
@@ -284,6 +290,8 @@ def cmpThetaOmegaMap(filename,Gamma,Theta0,Omega0,Thetaf,Omegaf,resTheta,resOmeg
         
             x0=[x1,y1,x2,y2,b,e]
             Err[i,j]=np.linalg.norm(Sol.fun(x0))
+            if Err[i,j]!=Err[i,j]:
+              raise ValueError("Nan detected, refine your map resolution!")              
 
     np.savez(filename,The,Om,xs,xf,ys,yf,E,Beta,Err)
 
