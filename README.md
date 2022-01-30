@@ -14,14 +14,14 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 # System Requirements:
 
-* Python > 3.7
-* numpy > 1.19
-* scipy > 1.15
+* Python >= 3.7
+* numpy >= 1.19
+* scipy >= 1.15
 
 # Install:
 
 No specific instructions for install. 
-Run your script ensuring that all sources are known by $PYTHON_PATH.
+Run your script ensuring that all sources are known by $PYTHONPATH.
 An example is provided with the script example.py
 
 For any question, write at victor.reville@irap.omp.eu
