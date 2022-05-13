@@ -28,7 +28,7 @@ import ZDIUtils as zdi
 
 class starAML(object):
     """ Python class for the computation of angular momentum loss as described in R\'eville et al. 2015b"""
-    def __init__(self,lmax=15,ngrid=100,verbose=0):
+    def __init__(self, lmax=15, ngrid=100, verbose=0):
         """"
            Initialize the starAML class
            This pre-load the spherical harmonics coefficients and various constants
@@ -68,15 +68,15 @@ class starAML(object):
         if hasattr(self,'Mass'):
             self.Normalize()
 
-    def cmpWind(self,sak=False):
+    def cmpWind(self,rmax=100,res=400,sak=False):
         self.Normalize()
         self.readMap()
         self.cmpSurfaceFlux()
-        self.cmpPolyWind()
+        self.cmpPolyWind(rmax=rmax,res=res)
         self.Wind=self.PolytropicWind
         if sak:
             try:
-                self.cmpSakuraiWind()
+                self.cmpSakuraiWind(rmax=rmax,res=res)
                 self.Wind=self.SakuraiWind
             except:
                 if self.verbose > 0:
@@ -675,6 +675,9 @@ class WindProfile(object):
         if (offset != 0.0):
             self.r=self.r+offset
             self.rc=self.rc+offset
+
+    def get_b(self,va_vesc):
+        self.b=va_vesc*np.sqrt(2.)/self.r**2
 
     def getToroidal(self,Omega,va_vesc):
         if not hasattr(self,"bphi"):
