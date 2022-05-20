@@ -1,6 +1,6 @@
 # starAML version 2.0
 
-Compute easily the angular momentum of solar-like stars
+Compute easily the angular momentum loss of solar-like stars
 
 starAML is a python class made for easy computation of stellar angular momentum loss.
 This program applies the method described in Réville et al. 2015b, the Astrophysical Journal 814, 99
