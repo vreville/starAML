@@ -321,10 +321,11 @@ def findThetaOmega(filename,Gamma,vkep,cs_vesc,vrot_vesc,va_vesc):
     Q1=E/Om**(1./3.)
     Q2=Beta**(Gamma-1.)*The/Om**(4./3.-Gamma)
 
-    cnt_q1=plt.contour(The,Om,Q1,[qty1])
+    fig,ax=plt.subplots(1,1)
+    cnt_q1=ax.contour(The,Om,Q1,[qty1])
     path_q1=cnt_q1.collections[0].get_paths()
 
-    cnt_q2=plt.contour(The,Om,Q2,[qty2])
+    cnt_q2=ax.contour(The,Om,Q2,[qty2])
     path_q2=cnt_q2.collections[0].get_paths()
 
     xi=np.array([])
