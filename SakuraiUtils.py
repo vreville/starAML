@@ -184,6 +184,8 @@ class SakuraiSolution(object):
     def rhoProfile(self,x,vkep,cs_vesc,vrot_vesc,rstar,rhostar):
         rho_profile=np.zeros(len(x))+0.01
         rA,rhoA=self.alfvenParam(vkep,cs_vesc,vrot_vesc,rstar,rhostar)
+        print(rA, rhoA)
+        print(self.Theta, self. Omega, self.xs, self.ys, self.xf, self.yf, self.Beta, self.E)
 
         for i in range(0,len(x)):
             if(i==0):
@@ -216,7 +218,7 @@ class SakuraiSolution(object):
 
                 rho_ref=rho_profile[i]
 
-        return rho_profile
+        return rho_profile            
 
     def solutionCheck(self):
         print(self.dHdx(self.xs,self.ys,self.Beta))
@@ -271,7 +273,7 @@ def cmpThetaOmegaMap(filename,Gamma,the,om):
             x0=[xs[i-1,0],ys[i-1,0],xf[i-1,0],yf[i-1,0],Beta[i-1,0],E[i-1,0]]
             
         for j in range(0,len(om)):
-            print("====> Computing Theta Omega Map : progress = {:.5f}%\r".format(1.0*(len(om)*i+j)/(len(om)*len(the))),end='\r',flush=True)
+            print("====> Computing Theta Omega Map : progress = {:.5f}%\r".format(100.0*(len(om)*i+j)/(len(om)*len(the))),end='\r',flush=True)
 
             Theta=the[i]
             Omega=om[j]
@@ -327,7 +329,7 @@ def findThetaOmega(filename,Gamma,vkep,cs_vesc,vrot_vesc,va_vesc):
 
     cnt_q2=ax.contour(The,Om,Q2,[qty2])
     path_q2=cnt_q2.collections[0].get_paths()
-
+    
     xi=np.array([])
     yi=np.array([])
 
@@ -350,6 +352,9 @@ def findThetaOmega(filename,Gamma,vkep,cs_vesc,vrot_vesc,va_vesc):
     else:
         FinalTheta=xi[0]
         FinalOmega=yi[0]
+
+    ax.set_xlim([0.5*FinalTheta, 1.5*FinalTheta])
+    ax.set_ylim([0.5*FinalOmega, 1.5*FinalOmega])
 
     idx=np.where(The[:,0] >= FinalTheta)[0][0]
     idy=np.where(Om[0,:] >= FinalOmega)[0][0]

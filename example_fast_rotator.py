@@ -54,7 +54,7 @@ print(T,O,xs,ys,xf,yf,Beta,E)
 
 r=np.linspace(1,30,1000)
 sakurai_wind=st.WindProfile(r,verbose=True)
-sakurai_wind.fromSakurai(Gamma,cs_vesc,vrot_vesc,va_vesc,vrot_vesc*np.sqrt(2.),cmp="True")
+sakurai_wind.fromSakurai(Gamma,cs_vesc,vrot_vesc,va_vesc,cmp="True")
 
 fig,ax=plt.subplots(1,1)
 unit_velocity=437 #km/s

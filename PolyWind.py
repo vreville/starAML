@@ -22,6 +22,9 @@ def getRc(Gamma,cs_vesc,wrc=0.0):
     if (Gamma >= 1+2*cs_vesc**2):
         print("Gamma is too high for the coronal sound speed value")
         return 1000
+    elif (cs_vesc > 0.5):
+        print("Tempeature is too high, critical radius is below the surface")
+        return 1000
     else:
         a=1/4./cs_vesc**2
         if(wrc != 0.0):

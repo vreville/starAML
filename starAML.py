@@ -103,10 +103,13 @@ class starAML(object):
             mapfile=None
         else:
             mapfile=kwargs.get('mapfile',self.mapfile)
+
+        rmax=kwargs.get('rmax', 100)
+        res=kwargs.get('res', 400)
         
         self.WindParameters(Gamma,Tc,Nc,Bp=Bp,mapfile=mapfile)
         if(len(kwargs) != 0):
-            self.cmpWind()
+            self.cmpWind(rmax=rmax, res=res)
             if hasattr(self,'spinDownTime'):
                 self.cmpTorque(update=True)
 
@@ -697,7 +700,7 @@ class WindProfile(object):
         if self.verbose > 0:
             print("Difference cs-v = {0} at the critical radius {1}".format(diff,self.rc))
         
-    def fromSakurai(self,Gamma,cs_vesc,vrot_vesc,va_vesc,breakupRatio,to_dir="./",cmp=True):
+    def fromSakurai(self,Gamma,cs_vesc,vrot_vesc,va_vesc,to_dir="./",cmp=True, filename='thetaomega.npz'):
         self.rstar=1.0
         self.rhostar=1.0
         self.Omega=vrot_vesc*np.sqrt(2.)
@@ -711,20 +714,15 @@ class WindProfile(object):
             self.cmpSak=0
         elif(cmp==False):
             self.cmpSak=0
-        elif(breakupRatio>0.01):
+        else:
             try:
-                FinalTheta,FinalOmega,xs,ys,xf,yf,Beta,E=su.findThetaOmega(to_dir+'thetaomega.npz',Gamma,self.vkep,cs_vesc,vrot_vesc,va_vesc)
+                FinalTheta,FinalOmega,xs,ys,xf,yf,Beta,E=su.findThetaOmega(to_dir+filename,Gamma,self.vkep,cs_vesc,vrot_vesc,va_vesc)
             except ValueError:
                 self.cmpSak=0
                 print("=============================================================================================")
                 print("==========!!! No match for (Theta,Omega), Sakurai solution will not be computed !!!==========")
-                print("--> Warning, breakup ratio>=0.01, the magneto-centrifugal effect is probably not negligible !")
-
-        else:
-            self.cmpSak=0
-            if self.verbose > 1:
-                print("================================================================================")
-                print("Breakup ratio < 0.01 the Sakurai Solution is not needed and will not be computed")
+                if (vrot_vesc*np.sqrt(2.) > 0.01):
+                    print("--> Warning, breakup ratio>=0.01, the magneto-centrifugal effect is probably not negligible !")
 
         # Compute Solution
         if (self.cmpSak):
