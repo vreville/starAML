@@ -145,6 +145,17 @@ class mysph(object):
                 ii = ii + 1 
         return br.real,bt.real,bp.real
 
+    def reconstruct_field(self,alpha, av = 0):
+        br = av*self.plm[0][0]*np.ones(self.yy[0].shape)
+        ii=0
+        for l in range(1,self.nl+1):
+            for m in range(l+1):
+                ell=float(l)
+                tmp = alpha[ii]*self.yy[ii]
+                br = br + tmp.real
+                ii = ii + 1
+        return br.real
+
     def cmp_potential_vector(self,alpha,rb=1.0,rsph=1.0,rss=2.5):
         Ar = np.zeros(np.shape(self.theta))
         At = np.zeros(np.shape(self.theta))
