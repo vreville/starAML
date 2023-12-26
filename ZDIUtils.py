@@ -21,6 +21,7 @@ from scipy.special import sph_harm
 import scipy.interpolate
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from timeit import default_timer as timer
+from tqdm import tqdm
 
 class mysph(object):
     """ Class to do all extrapolation using spherical harmonics. Basic idea is to precompute and store the needed 
@@ -40,7 +41,8 @@ class mysph(object):
             phi1d=self.phi[:,0]*0.0
 
         self.plm.append(ylm(0,0,phi1d,theta1d))
-        for l in range(1,self.nl+1):
+        
+        for l in tqdm(range(1,self.nl+1)):
             for m in range(l+1):
                 self.plm.append(ylm(m,l,phi1d,theta1d))
                 self.xx.append(xlm(m,l,self.phi,self.theta))
@@ -267,7 +269,6 @@ def dipole(theta,r):
     
     return br,bt,bp
 
-
 def diff(field,dir=1):    
     if(dir==1):
         field1=field[:,1:-1]
@@ -275,8 +276,6 @@ def diff(field,dir=1):
     if(dir==2):
         field1=field[1:-1,:]
         return field1[:,2:]-field1[:,:-2]
-
-
 
 # Spherical harmonics base
 def ylm(m,n,phi,theta):
