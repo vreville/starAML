@@ -284,17 +284,22 @@ def ylm(m,n,phi,theta):
         return 0.0
     else:
         return sph_harm(m,n,phi,theta)
+    
 def xlm(m,n,phi,theta):
     ll = float(n) ; mm = float(m)
-    xlm=sph_harm(m,n,phi,theta)*1j*mm/(np.sin(theta)*(ll+1))
-    xlm[np.isnan(xlm)]=0.0
+    xlm=sph_harm(m,n,phi,theta)*1j*mm
+    st=np.sin(theta)
+    idz=np.where(st != 0)
+    xlm[idz]/=(st[idz]*(ll+1))
     return xlm
 
 def zlm(m,n,phi,theta):
     ll = float(n) ; mm = float(m)
     cc = ((ll+1.-mm) / (ll+1.) )/np.sqrt( ((2.*(ll+1.)+1.0)*(ll+1-mm)) / ((2.*ll+1.0)*(ll+1.+mm)) )
-    zlm=(-sph_harm(m,n,phi,theta)*np.cos(theta) + cc*sph_harm(m,n+1,phi,theta))/np.sin(theta)
-    zlm[np.isnan(zlm)]=0.0
+    zlm=(-sph_harm(m,n,phi,theta)*np.cos(theta) + cc*sph_harm(m,n+1,phi,theta))
+    st=np.sin(theta)
+    idz=np.where(st != 0)
+    zlm[idz]/=(st[idz])
     return zlm
 
 def zlm2(m,n,phi,theta):
