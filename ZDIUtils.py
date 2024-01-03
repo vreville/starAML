@@ -181,10 +181,6 @@ class mysph(object):
         br,bt,bp=self.pfss3d(alpha,rss=rss,rsph=rsph)
         br_p,bt_p,bp_p=self.pfss3d(alpha,rss=rss,rsph=rsph+dr)
         br_m,bt_m,bp_m=self.pfss3d(alpha,rss=rss,rsph=rsph-dr)
-
-        #br,bt,bp=dipole(self.theta,rsph)
-        #br_p,bt_p,bp_p=dipole(self.theta,rsph+dr)
-        #br_m,bt_m,bp_m=dipole(self.theta,rsph-dr)
                 
         dtheta=diff(self.theta,1)
         dphi=diff(self.phi,2)
