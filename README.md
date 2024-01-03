@@ -17,6 +17,7 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 * Python >= 3.7
 * numpy >= 1.19
 * scipy >= 1.15
+* tqdm
 
 # Install:
 
