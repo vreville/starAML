@@ -14,9 +14,12 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 # System Requirements:
 
-* Python >= 3.7
+Tested with
+
+* Python >= 3.8
 * numpy >= 1.19
-* scipy >= 1.15
+* scipy >= 1.10
+# scikit-image
 * tqdm
 
 # Install:

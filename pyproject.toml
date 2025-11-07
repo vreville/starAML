@@ -9,10 +9,10 @@ description = "Compute easily the angular momentum loss of solar-like star"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Victor Réville", email = "victor.reville@irap.omp.eu" }]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
          "numpy (>1.19)",
-         "scipy (>=1.15.0)",
+         "scipy (>=1.10.0)",
 	 "scikit-image",
 ]
 
