@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import starAML as st
+from starAML import starAML as st
 
 # Solar wind 
 Mass=1.0   # Solar Mass

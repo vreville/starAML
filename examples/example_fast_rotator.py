@@ -2,8 +2,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import SakuraiUtils as su
-import starAML as st
+from starAML import SakuraiUtils as su
+from starAML import starAML as st
 
 the=np.linspace(0.1,10,2000)
 om=np.linspace(0.1,1000,5000)

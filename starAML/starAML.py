@@ -22,9 +22,9 @@ import matplotlib.pyplot as plt
 from timeit import default_timer as timer
 from subprocess import call
 import scipy.interpolate
-import PolyWind as pw
-import SakuraiUtils as su
-import ZDIUtils as zdi
+from starAML import PolyWind as pw
+from starAML import SakuraiUtils as su
+from starAML import ZDIUtils as zdi
 
 class starAML(object):
     """ Python class for the computation of angular momentum loss as described in R\'eville et al. 2015b"""

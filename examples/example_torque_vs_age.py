@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import starAML as st
+from starAML import starAML as st
 
 # Solar wind 
 Mass=1.0   # Solar Mass

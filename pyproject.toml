@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starAML"
+version = "2.0.0"
+description = "Compute easily the angular momentum loss of solar-like star"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Victor Réville", email = "victor.reville@irap.omp.eu" }]
+requires-python = ">=3.7"
+dependencies = [
+         "numpy (>1.19)",
+         "scipy (>=1.15.0)",
+]
+
+[project.urls]
+Homepage = "https://github.com/vreville/starAML"
+
+[tool.setuptools.packages.find]
+where = ["."]

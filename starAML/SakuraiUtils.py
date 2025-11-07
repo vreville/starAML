@@ -16,7 +16,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-import find_intersections as fi
+from starAML import find_intersections as fi
+from scipy.interpolate import interp1d
+import skimage
 
 #################################################################
 class SakuraiSolution(object):
@@ -324,28 +326,49 @@ def findThetaOmega(filename,Gamma,vkep,cs_vesc,vrot_vesc,va_vesc):
     Q2=Beta**(Gamma-1.)*The/Om**(4./3.-Gamma)
 
     fig,ax=plt.subplots(1,1)
-    cnt_q1=ax.contour(The,Om,Q1,[qty1])
-    path_q1=cnt_q1.collections[0].get_paths()
+    ax.contour(The,Om,Q1,[qty1])
+    #path_q1=cnt_q1.collections[0].get_paths()
 
-    cnt_q2=ax.contour(The,Om,Q2,[qty2])
-    path_q2=cnt_q2.collections[0].get_paths()
+    ax.contour(The,Om,Q2,[qty2])
+    #path_q2=cnt_q2.collections[0].get_paths()
+
+    #xi=np.array([])
+    #yi=np.array([])
+    
+    #i=0
+    #ncombos = (sum([len(x.get_paths()) for x in cnt_q1.collections]) * 
+    #           sum([len(x.get_paths()) for x in cnt_q2.collections]))
+    #for linecol1, linecol2 in itertools.product(cnt_q1.collections, cnt_q2.collections):
+    #    for path1, path2 in itertools.product(linecol1.get_paths(),linecol2.get_paths()):
+    #        i += 1
+    #        #print('line combo {0} of {1}'.format(i, ncombos))        
+    #        xinter, yinter = fi.linelineintersect(path1.vertices, path2.vertices)
+
+    #        xi = np.append(xi, xinter)
+    #        yi = np.append(yi, yinter)
+
+    cnt_q1=skimage.measure.find_contours(Q1, qty1)
+    cnt_q2=skimage.measure.find_contours(Q2, qty2)
+    iOm=interp1d(range(len(Om[0,:])), Om[0, :])
+    iThe=interp1d(range(len(The[:,0])), The[:, 0])
     
     xi=np.array([])
     yi=np.array([])
 
     i=0
-    ncombos = (sum([len(x.get_paths()) for x in cnt_q1.collections]) * 
-               sum([len(x.get_paths()) for x in cnt_q2.collections]))
-    for linecol1, linecol2 in itertools.product(cnt_q1.collections, cnt_q2.collections):
-        for path1, path2 in itertools.product(linecol1.get_paths(),linecol2.get_paths()):
-            i += 1
-            #print('line combo {0} of {1}'.format(i, ncombos))        
-            xinter, yinter = fi.linelineintersect(path1.vertices, path2.vertices)
+    
+    for path1, path2 in itertools.product(cnt_q1,cnt_q2):
 
-            xi = np.append(xi, xinter)
-            yi = np.append(yi, yinter)
+        coords1=np.array([[iThe(path1[i,0]), iOm(path1[i,1])] for i in range(len(path1))])
+        coords2=np.array([[iThe(path2[i,0]), iOm(path2[i,1])] for i in range(len(path2))])
 
-    #print np.column_stack((xi,yi))
+        #print(coords1, coords2)
+        xinter, yinter = fi.linelineintersect(coords1, coords2)
+        
+        xi = np.append(xi, xinter)
+        yi = np.append(yi, yinter)
+            
+    #print(xi,yi)
 
     if (len(xi) != 1):
         raise ValueError("Error, no or more than one set of (Theta, Omega) can be picked")
@@ -353,6 +376,7 @@ def findThetaOmega(filename,Gamma,vkep,cs_vesc,vrot_vesc,va_vesc):
         FinalTheta=xi[0]
         FinalOmega=yi[0]
 
+    print(FinalTheta, FinalOmega)
     ax.set_xlim([0.5*FinalTheta, 1.5*FinalTheta])
     ax.set_ylim([0.5*FinalOmega, 1.5*FinalOmega])
 
