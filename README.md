@@ -19,7 +19,7 @@ Tested with
 * Python >= 3.8
 * numpy >= 1.19
 * scipy >= 1.10
-# scikit-image
+* scikit-image
 * tqdm
 
 # Install:
