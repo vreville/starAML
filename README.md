@@ -21,9 +21,10 @@ Copyright (C) 2015, Victor Réville, Allan Sacha Brun, Antoine Strugarek
 
 # Install:
 
-No specific instructions for install. 
-Run your script ensuring that all sources are known by $PYTHONPATH.
-Various examples are provided.
-
+```bash
+git clone https://github.com/vreville/starAML
+cd starAML
+pip install .
+```
 For any question, write at victor.reville@irap.omp.eu
 
