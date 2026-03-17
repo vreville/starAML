@@ -41,7 +41,7 @@ class starAML(object):
         self.lmax=lmax
         self.theta, self.phi = np.mgrid[1e-5:np.pi-1e-5:(ngrid+1)*1j, 0:2*np.pi:(2*ngrid+1)*1j] # (Theta,Phi) Grid
         Grid=np.ones((np.shape(self.theta)[0],np.shape(self.theta)[1]))
-        self.gridArea=zdi.cmpMagFlux(self.theta,self.phi,Grid,1.0)
+        self.gridArea=zdi.cmp_mag_flux(self.theta,self.phi,Grid,1.0)
         self.nharm=(lmax+1)*(lmax+2)//2-1
         self.SphHarm = zdi.mysph(self.lmax,self.theta,self.phi)
         # Constants Dictionnary
@@ -265,8 +265,8 @@ class starAML(object):
             self.alpha=alpha/self.Umag
 
     def cmpSurfaceFlux(self):
-        br,bt,bp=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=1.0)
-        self.surfaceFlux=zdi.cmpMagFlux(self.theta,self.phi,br,1.0)
+        br,bt,bp=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=1.0)
+        self.surfaceFlux=zdi.cmp_mag_flux(self.theta,self.phi,br,1.0)
         self.va_vesc=self.surfaceFlux/4/np.pi/np.sqrt(2.) # rhostar=1.0
         if self.verbose > 1:
             print("va_vesc = {0}".format(self.va_vesc))
@@ -293,9 +293,9 @@ class starAML(object):
             rad=np.linspace(1.0,10.0,15)
             f=np.zeros(len(rad))
             for ii,rr in enumerate(rad):
-                br,bt,bp=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rr)
+                br,bt,bp=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rr)
                 bb=np.sqrt(br**2+bt**2+bp**2)
-                magpr=zdi.cmpMagFlux(self.theta,self.phi,bb**2/2.,rr)/self.gridArea/(rr)**2
+                magpr=zdi.cmp_mag_flux(self.theta,self.phi,bb**2/2.,rr)/self.gridArea/(rr)**2
                 f[ii]=magpr-hydroPressure(rr)
                 
             fig=plt.figure()
@@ -308,14 +308,14 @@ class starAML(object):
         if self.verbose > 2:
             print("Starting Newton-Raphson method for r_ss computation")
                
-        br_0,bt_0,bp_0=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=r0)
-        br_h,bt_h,bp_h=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=r0+dr)
+        br_0,bt_0,bp_0=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=r0)
+        br_h,bt_h,bp_h=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=r0+dr)
 
         bb0=np.sqrt(br_0**2+bt_0**2+bp_0**2)
         bbh=np.sqrt(br_h**2+bt_h**2+bp_h**2)
 
-        magpr0=zdi.cmpMagFlux(self.theta,self.phi,bb0**2/2.,r0)/self.gridArea/r0**2
-        magprh=zdi.cmpMagFlux(self.theta,self.phi,bbh**2/2.,r0+dr)/self.gridArea/(r0+dr)**2
+        magpr0=zdi.cmp_mag_flux(self.theta,self.phi,bb0**2/2.,r0)/self.gridArea/r0**2
+        magprh=zdi.cmp_mag_flux(self.theta,self.phi,bbh**2/2.,r0+dr)/self.gridArea/(r0+dr)**2
         
         ObjFunc=magpr0-hydroPressure(r0)
         slope=(magprh-hydroPressure(r0+dr)-ObjFunc)/dr
@@ -329,15 +329,15 @@ class starAML(object):
             while(np.abs(ObjFunc) > 1e-12):
                 
                 rn=rn-ObjFunc/slope
-                br_n,bt_n,bp_n=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rn)
+                br_n,bt_n,bp_n=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rn)
                 bbn=np.sqrt(br_n**2+bt_n**2+bp_n**2)
-                magprn=zdi.cmpMagFlux(self.theta,self.phi,bbn**2/2.,rn)/self.gridArea/rn**2
+                magprn=zdi.cmp_mag_flux(self.theta,self.phi,bbn**2/2.,rn)/self.gridArea/rn**2
                 ObjFunc=magprn-hydroPressure(rn)
                 
                 dr=dr
-                br_h,bt_h,bp_h=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rn+dr)
+                br_h,bt_h,bp_h=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rn+dr)
                 bbh=np.sqrt(br_h**2+bt_h**2+bp_h**2)
-                magprh=zdi.cmpMagFlux(self.theta,self.phi,bbh**2/2.,rn+dr)/self.gridArea/(rn+dr)**2
+                magprh=zdi.cmp_mag_flux(self.theta,self.phi,bbh**2/2.,rn+dr)/self.gridArea/(rn+dr)**2
                 slope=(magprh-hydroPressure(rn+dr)-ObjFunc)/dr
                 if self.verbose > 2:
                     print("rn = {0}, dr = {1}, pressure diff = {2}, slope = {3}".format(rn,dr,ObjFunc,slope))
@@ -358,14 +358,14 @@ class starAML(object):
         if self.verbose > 2:
             print("Starting bisection method for r_ss computation")
         epsilon=rh-rl
-        br_l,bt_l,bp_l=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rl)
-        br_h,bt_h,bp_h=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rh)
+        br_l,bt_l,bp_l=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rl)
+        br_h,bt_h,bp_h=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rh)
 
         bbl=np.sqrt(br_l**2+bt_l**2+bp_l**2)
         bbh=np.sqrt(br_h**2+bt_h**2+bp_h**2)
 
-        magprl=zdi.cmpMagFlux(self.theta,self.phi,bbl**2/2.,rl)/self.gridArea/rl**2
-        magprh=zdi.cmpMagFlux(self.theta,self.phi,bbh**2/2.,rh)/self.gridArea/rh**2
+        magprl=zdi.cmp_mag_flux(self.theta,self.phi,bbl**2/2.,rl)/self.gridArea/rl**2
+        magprh=zdi.cmp_mag_flux(self.theta,self.phi,bbh**2/2.,rh)/self.gridArea/rh**2
         
         diffLow=magprl-hydroPressure(rl)
         diffHigh=magprh-hydroPressure(rh)
@@ -379,10 +379,10 @@ class starAML(object):
                 a=np.abs(np.log10(np.abs(diffHigh)))
                 b=np.abs(np.log10(np.abs(diffLow)))
                 rm=(a*rl+b*rh)/(a+b)
-                br_m,bt_m,bp_m=self.SphHarm.multipolarExpansion(self.alpha,rb=1.0,rsph=rm)
+                br_m,bt_m,bp_m=self.SphHarm.multipolar_expansion(self.alpha,rb=1.0,rsph=rm)
                 bbm=np.sqrt(br_m**2+bt_m**2+bp_m**2)
 
-                magprm=zdi.cmpMagFlux(self.theta,self.phi,bbm**2/2.,rm)/self.gridArea/rm**2
+                magprm=zdi.cmp_mag_flux(self.theta,self.phi,bbm**2/2.,rm)/self.gridArea/rm**2
                 diffMiddle=magprm-hydroPressure(rm)
                 if (diffMiddle>0):
                     rl=rm
@@ -421,8 +421,8 @@ class starAML(object):
         bbl=np.sqrt(br_l**2+bt_l**2+bp_l**2)
         bbh=np.sqrt(br_h**2+bt_h**2+bp_h**2)
 
-        magprl=zdi.cmpMagFlux(self.theta,self.phi,bbl**2/2.,rl)/self.gridArea/rl**2
-        magprh=zdi.cmpMagFlux(self.theta,self.phi,bbh**2/2.,rh)/self.gridArea/rh**2
+        magprl=zdi.cmp_mag_flux(self.theta,self.phi,bbl**2/2.,rl)/self.gridArea/rl**2
+        magprh=zdi.cmp_mag_flux(self.theta,self.phi,bbh**2/2.,rh)/self.gridArea/rh**2
         
         diffLow=magprl-hydroPressure(rl)
         diffHigh=magprh-hydroPressure(rh)
@@ -442,7 +442,7 @@ class starAML(object):
                     dt = timer() - start ; print(">>time>> multip expansion: {.2f} s".format(dt)) ; start=timer()
                 bbm=np.sqrt(br_m**2+bt_m**2+bp_m**2)
 
-                magprm=zdi.cmpMagFlux(self.theta,self.phi,bbm**2/2.,rm)/self.gridArea/rm**2
+                magprm=zdi.cmp_mag_flux(self.theta,self.phi,bbm**2/2.,rm)/self.gridArea/rm**2
                 if (print_timings):
                     dt = timer() - start ; print(">>time>> cmpmagflux: {.2f} s".format(dt)) ; start=timer()
                 diffMiddle=magprm-hydroPressure(rm)
@@ -463,7 +463,7 @@ class starAML(object):
     def cmpOpenFluxEstimate(self):
         start = timer()
         br_ex,bp_ex,bt_ex=self.SphHarm.pfss3d(self.alpha,rss=self.Rss,rb=1.0,rsph=self.Rss)
-        self.OpFlux=zdi.cmpMagFlux(self.theta,self.phi,br_ex,self.Rss)
+        self.OpFlux=zdi.cmp_mag_flux(self.theta,self.phi,br_ex,self.Rss)
 
     def cmpTorqueMatt2015(self):
         Teff_sun=self.Constants['Teff_sun'] #K 
@@ -581,8 +581,8 @@ class starAML(object):
         bpl=np.sqrt(br_l**2+bt_l**2)
         bph=np.sqrt(br_h**2+bt_h**2)
 
-        poloidalFieldAverageLow=zdi.cmpMagFlux(self.theta,self.phi,bpl,rl)/self.gridArea/rl**2
-        poloidalFieldAverageHigh=zdi.cmpMagFlux(self.theta,self.phi,bph,rh)/self.gridArea/rh**2
+        poloidalFieldAverageLow=zdi.cmp_mag_flux(self.theta,self.phi,bpl,rl)/self.gridArea/rl**2
+        poloidalFieldAverageHigh=zdi.cmp_mag_flux(self.theta,self.phi,bph,rh)/self.gridArea/rh**2
 
         if (not((poloidalFieldAverageLow-iSqRam(rl)>0.) and (poloidalFieldAverageHigh-iSqRam(rh)<0.))):
             print("Warning bad boundaries for the bisection method")
@@ -594,7 +594,7 @@ class starAML(object):
                 rm=(rl+rh)/2.
                 br_m,bt_m,bp_m=self.SphHarm.pfss3d(self.alpha,rss=self.Rss,rb=1.0,rsph=rm)
                 bpm=np.sqrt(br_m**2+bt_m**2)
-                poloidalFieldAverage=zdi.cmpMagFlux(self.theta,self.phi,bpm,rm)/self.gridArea/rm**2
+                poloidalFieldAverage=zdi.cmp_mag_flux(self.theta,self.phi,bpm,rm)/self.gridArea/rm**2
                 meanField=np.mean(bpm)
                 if self.verbose > 1:
                     print("Mean Field = {0}, {1}, sqrt(rho)*v = {2} at r= {3}".format(poloidalFieldAverage,meanField,iSqRam(rm),rm))
@@ -622,8 +622,8 @@ class starAML(object):
         br_l,bt_l,bp_l=self.SphHarm.pfss3d(self.alpha,rss=rl,rb=1.0,rsph=rl)
         br_h,bt_h,bp_h=self.SphHarm.pfss3d(self.alpha,rss=rh,rb=1.0,rsph=rh)
 
-        opfl=zdi.cmpMagFlux(self.theta,self.phi,br_l,rl)
-        opfh=zdi.cmpMagFlux(self.theta,self.phi,br_h,rh)
+        opfl=zdi.cmp_mag_flux(self.theta,self.phi,br_l,rl)
+        opfh=zdi.cmp_mag_flux(self.theta,self.phi,br_h,rh)
         
         if (not((opfl-OpenFlux>0) and (opfh-OpenFlux<0))):
             print("Warning bad boundaries for the bisection method")
@@ -633,7 +633,7 @@ class starAML(object):
             while(epsilon > eps):
                 rm=(rl+rh)/2.
                 br_m,bt_m,bp_m=self.SphHarm.pfss3d(self.alpha,rss=rm,rb=1.0,rsph=rm)
-                opfm=zdi.cmpMagFlux(self.theta,self.phi,br_m,rm)
+                opfm=zdi.cmp_mag_flux(self.theta,self.phi,br_m,rm)
                 if (opfm-OpenFlux>0):
                     rl=rm
                 else:

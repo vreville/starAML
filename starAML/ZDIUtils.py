@@ -17,7 +17,10 @@ import os
 import numpy as np
 import matplotlib.ticker
 import matplotlib.pyplot as plt
-from scipy.special import sph_harm
+from packaging.version import Version
+import scipy
+if Version(scipy.__version__) < Version('1.15'): from scipy.special import sph_harm
+else: from scipy.special import sph_harm_y as sph_harm
 import scipy.interpolate
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from timeit import default_timer as timer
@@ -40,14 +43,17 @@ class mysph(object):
             theta1d=self.theta[:,0]
             phi1d=self.phi[:,0]*0.0
 
-        self.plm.append(ylm(0,0,phi1d,theta1d))
-        
+        if Version(scipy.__version__) < Version('1.15'): version=13
+        else: version=15
+
+        self.plm.append(ylm(0,0,phi1d,theta1d,version=version))
+ 
         for l in tqdm(range(1,self.nl+1)):
             for m in range(l+1):
                 self.plm.append(ylm(m,l,phi1d,theta1d))
-                self.xx.append(xlm(m,l,self.phi,self.theta))
-                self.yy.append(ylm(m,l,self.phi,self.theta))
-                self.zz.append(zlm(m,l,self.phi,self.theta))
+                self.xx.append(xlm(m,l,self.phi,self.theta,version=version))
+                self.yy.append(ylm(m,l,self.phi,self.theta,version=version))
+                self.zz.append(zlm(m,l,self.phi,self.theta,version=version))
 
     def pfss3d(self,alpha,rss=5.0,rb=1.0,rsph=1.0):
 
@@ -127,7 +133,7 @@ class mysph(object):
 
         return br,bt,bp
 
-    def multipolarExpansion(self,alpha,rb=1.0,rsph=1.0):
+    def multipolar_expansion(self,alpha,rb=1.0,rsph=1.0):
         br = np.zeros(np.shape(self.theta))
         bt = np.zeros(np.shape(self.theta))
         bp = np.zeros(np.shape(self.theta))    
@@ -177,7 +183,7 @@ class mysph(object):
         return Ar,At,Ap
 
 
-    def Currents(self,alpha,rss=5.0,rsph=1.0,dr=0.01):
+    def cmp_currents(self,alpha,rss=5.0,rsph=1.0,dr=0.01):
         br,bt,bp=self.pfss3d(alpha,rss=rss,rsph=rsph)
         br_p,bt_p,bp_p=self.pfss3d(alpha,rss=rss,rsph=rsph+dr)
         br_m,bt_m,bp_m=self.pfss3d(alpha,rss=rss,rsph=rsph-dr)
@@ -274,38 +280,42 @@ def diff(field,dir=1):
         return field1[:,2:]-field1[:,:-2]
 
 # Spherical harmonics base
-def ylm(m,n,phi,theta):
+def ylm(m,n,phi,theta,version=13):
     ll = float(n) ; mm = float(m)
     if(abs(m) > n):
         return 0.0
-    else:
+    elif version<15:
         return sph_harm(m,n,phi,theta)
+    else:
+        return sph_harm(n,m,theta,phi)
     
-def xlm(m,n,phi,theta):
+def xlm(m,n,phi,theta,version=13):
     ll = float(n) ; mm = float(m)
-    xlm=sph_harm(m,n,phi,theta)*1j*mm
+    if version<15: xlm=sph_harm(m,n,phi,theta)*1j*mm
+    else:          xlm=sph_harm(n,m,theta,phi)*1j*mm
     st=np.sin(theta)
     idz=np.where(st != 0)
     xlm[idz]/=(st[idz]*(ll+1))
     return xlm
 
-def zlm(m,n,phi,theta):
+def zlm(m,n,phi,theta,version=13):
     ll = float(n) ; mm = float(m)
     cc = ((ll+1.-mm) / (ll+1.) )/np.sqrt( ((2.*(ll+1.)+1.0)*(ll+1-mm)) / ((2.*ll+1.0)*(ll+1.+mm)) )
-    zlm=(-sph_harm(m,n,phi,theta)*np.cos(theta) + cc*sph_harm(m,n+1,phi,theta))
+    if version<15: zlm=(-sph_harm(m,n,phi,theta)*np.cos(theta) + cc*sph_harm(m,n+1,phi,theta))
+    else:          zlm=(-sph_harm(n,m,theta,phi)*np.cos(theta) + cc*sph_harm(n+1,m,theta,phi))
     st=np.sin(theta)
     idz=np.where(st != 0)
     zlm[idz]/=(st[idz])
     return zlm
 
-def zlm2(m,n,phi,theta):
-    ll = float(n) ; mm = float(m)
-    cc = ((ll+mm) / (ll+1.) )*np.sqrt( ((2.*ll+1.0)*(ll-mm)) / ((2.*ll-1.0)*(ll+mm)) )
-    return (ll/(ll+1)*sph_harm(m,n,phi,theta)*np.cos(theta) - cc*ylm(m,n-1,phi,theta))/np.sin(theta)
+#def zlm2(m,n,phi,theta):
+#    ll = float(n) ; mm = float(m)
+#    cc = ((ll+mm) / (ll+1.) )*np.sqrt( ((2.*ll+1.0)*(ll-mm)) / ((2.*ll-1.0)*(ll+mm)) )
+#    return (ll/(ll+1)*sph_harm(m,n,phi,theta)*np.cos(theta) - cc*ylm(m,n-1,phi,theta))/np.sin(theta)
 
 
 # Read ZDI map
-def read_Bfield(myfile,dir="./"):
+def read_ZDImap(myfile,dir="./"):
     filename = dir+myfile
     f = open(filename,'r')
     tmp = f.readline()
@@ -385,7 +395,7 @@ def pfss3d(alpha,theta,phi,rss=5.0,rb=1.0,rsph=1.0):
 
 
 # Multipolar expansion of the surface field
-def multipolarExpansion(alpha,theta,phi,rb=1.0,rsph=1.0):
+def multipolar_expansion(alpha,theta,phi,rb=1.0,rsph=1.0):
 
     nharms=len(alpha)
     nl = int((-3+np.sqrt(9+8*nharms))/2.)
@@ -457,7 +467,7 @@ def reconstruct_B(myfile,theta,phi,dir="./",reg=True):
                         
     return br,bt,bp
 
-def buildMagField(alpha,beta,gamma,theta,phi,reg=True):
+def build_mag_field(alpha,beta,gamma,theta,phi,reg=True):
 
     nharms=len(alpha)
     nl = int((-3+np.sqrt(9+8*nharms))/2.)
@@ -500,7 +510,7 @@ def buildMagField(alpha,beta,gamma,theta,phi,reg=True):
 
 
 # Compute unsigned magnetic flux
-def cmpMagFlux(theta,phi,br,r,abs=True):
+def cmp_mag_flux(theta,phi,br,r,abs=True):
     dtheta=np.tile(np.diff(theta[:,0]),(np.shape(phi)[1]-1,1)).transpose()
     dphi=np.tile(np.diff(phi[0,:]),(np.shape(theta)[0]-1,1))
 
@@ -558,7 +568,7 @@ def plot_var_fields(list_fs,theta,phi,rad,list_sim,qty_s=r"$B_r$",vmin=-10,vmax=
     var_stats=np.zeros((nf,nr))
     for ii,ifs in enumerate(list_fs):
         for rr,rfs in enumerate(ifs):
-            mean=1/(4*np.pi*rad[rr]**2)*cmpMagFlux(theta,phi,rfs,rad[rr])
+            mean=1/(4*np.pi*rad[rr]**2)*cmp_mag_flux(theta,phi,rfs,rad[rr])
             varfs=(rfs-mean)/mean*100
             var_stats[ii,rr]=mean**2*(varfs**2).sum()/(rfs.shape[0]*rfs.shape[1])
             ax=fig.add_subplot(nr,nf,1+ii+rr*nf)
@@ -600,7 +610,7 @@ def plot_var_fields(list_fs,theta,phi,rad,list_sim,qty_s=r"$B_r$",vmin=-10,vmax=
     return var_stats
 
 # Power Spectrum
-def powerSpectrum(myfile,dir='./'):
+def power_spectrum(myfile,dir='./'):
     alpha,beta,gamma = read_Bfield(myfile,dir=dir)
     nharms=len(alpha)
     nl = int((-3+np.sqrt(9+8*nharms))/2.)

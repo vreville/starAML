@@ -7,7 +7,7 @@ from starAML import starAML as st
 # Solar wind 
 Mass=1.0   # Solar Mass
 Radius=1.0 # Solar Radius
-Period=28  # Days
+Period=25  # Days
 Teff=5778  # Kelvin
 
 Gamma=1.05 # Polytropic index
