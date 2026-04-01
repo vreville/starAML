@@ -1,18 +1,3 @@
-#    This file is part of starAML
-
-#    starAML is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    starAML is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import os
 import numpy as np
 import matplotlib.ticker
@@ -50,7 +35,7 @@ class mysph(object):
  
         for l in tqdm(range(1,self.nl+1)):
             for m in range(l+1):
-                self.plm.append(ylm(m,l,phi1d,theta1d))
+                self.plm.append(ylm(m,l,phi1d,theta1d,version=version))
                 self.xx.append(xlm(m,l,self.phi,self.theta,version=version))
                 self.yy.append(ylm(m,l,self.phi,self.theta,version=version))
                 self.zz.append(zlm(m,l,self.phi,self.theta,version=version))
@@ -346,7 +331,7 @@ def read_ZDImap(myfile,dir="./"):
             gamma[ii] = complex(float(vals[2]),float(vals[3]))
             ii = ii + 1
     f.close()
-    return alpha,beta,gamma
+    return alpha,beta,gamma,nl
 
 
 # Potential extrapolation with a Source Surface
@@ -764,13 +749,13 @@ def spherical_harmonics_decomposition(A,theta,lmax=3,sym=None,silent=True):
     return [B,alpha,axis]
 
 
-def createZDImap(alm,mapname,path="./"):
+def create_ZDImap(header,alm,mapname,path="./"):
     zdimap=path+mapname
     lmax = int((-3+np.sqrt(9+8*len(alm)))/2.)
     #if not os.path.exists(zdimap):
     if True:
         f=open(zdimap,'w')
-        f.write("Br spherical harmonics coeffs\n")
+        f.write(header+"\n")
         f.write("{:d} {:d} {:d}\n".format(len(alm),0,0))
         k=0
         for i in range(1,lmax+1):

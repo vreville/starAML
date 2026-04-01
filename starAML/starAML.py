@@ -24,7 +24,7 @@ from subprocess import call
 import scipy.interpolate
 from starAML import PolyWind as pw
 from starAML import SakuraiUtils as su
-from starAML import ZDIUtils as zdi
+from starAML import sph_harmonics as zdi
 
 class starAML(object):
     """ Python class for the computation of angular momentum loss as described in R\'eville et al. 2015b"""
